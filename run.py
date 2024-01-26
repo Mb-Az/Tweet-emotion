@@ -38,7 +38,7 @@ def load_data(data_path):
 
 
 # train your model and report the duration time
-train_data_path = 'train_data.csv' 
+train_data_path = 'train_data.csv'
 classes = ['negative', 'neutral','positive']
 nb_classifier = NaiveBayesClassifier(classes)
 nb_classifier.train(load_data(train_data_path))
