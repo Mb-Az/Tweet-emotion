@@ -25,7 +25,7 @@ def preprocess(tweet_string):
     features = []
     for sent in sentences:
         for word in nltk.word_tokenize(sent):
-            if word not in stopwords and word not in punctuation and not has_numbers(word) and word.startswith(alphabets):
+            if word not in stopwords and word not in punctuation and not has_numbers(word) and word.startswith(alphabets): #should also clean I,you, my ...?
                 features.append(ps.stem(word))
     return features
 
@@ -34,18 +34,16 @@ def load_data(data_path):
     data = []
     for tweet_text,label in zip(df['text'],df['label']):
         data.append((preprocess(tweet_text),label))
-        print(data[-1])
-    # your code
     return data
 
 
 # train your model and report the duration time
 train_data_path = 'train_data.csv' 
-classes = ['positive', 'negative', 'neutral']
-# nb_classifier = NaiveBayesClassifier(classes)
-# nb_classifier.train(load_data(train_data_path))
-
+classes = ['negative', 'neutral','positive']
+nb_classifier = NaiveBayesClassifier(classes)
+nb_classifier.train(load_data(train_data_path))
+print(nb_classifier.calculate_landa('mom',True))
 test_string = "I love playing football"
-print(preprocess(test_string))
-load_data(train_data_path)
-# print(nb_classifier.classify(preprocess(test_string)))
+print(nb_classifier.classify(preprocess(test_string)))
+#what are eval_data and test_data_nolablel for?
+
