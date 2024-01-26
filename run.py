@@ -45,11 +45,7 @@ train_data_path = os.path.join(here, "train_data.csv")
 classes = ['negative', 'neutral','positive']
 nb_classifier = NaiveBayesClassifier(classes)
 nb_classifier.train(load_data(train_data_path))
-#print(nb_classifier.calculate_landa('brain',True))
 
-
-#what are eval_data and test_data_nolablel for?
-#eval data -> checking and improving our model   test data -> the project output to be checked by TAs
 
 #Checking eval data:
 eval_data_path = os.path.join(here, "eval_data.csv")

@@ -20,7 +20,7 @@ class NaiveBayesClassifier:
     def train(self, data):
         # training process:
         # inputs: data(list) --> each item of list is a tuple 
-        # the first index of the tuple is a list of words and the second index is the label(negetive, neutral, or positive)
+        # the first index of the tuple is a list of words and the second index is the label(negative, neutral, or positive)
 
         for features, label in data:
             self.class_counts[label] += 1 
@@ -32,7 +32,9 @@ class NaiveBayesClassifier:
                      self.class_word_counts[word][label] += 1
 
 
-    #def calculate_prior_log(self):
+    def calculate_prior(self):
+        pass
+       #def calculate_prior_log(self):
     #    # calculate log prior
     #    return math.log2(self.class_counts[2]/self.class_counts[0])
                      
@@ -87,5 +89,3 @@ class NaiveBayesClassifier:
         if(probs[1] > probs[2]):
             return(self.classes[1])
         return self.classes[2]
-
-# Good luck :)
