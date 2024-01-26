@@ -1,6 +1,7 @@
 from template import NaiveBayesClassifier
 import string
 import pandas as pd
+import os
 import nltk.tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
@@ -12,7 +13,7 @@ stopwords = set(stopwords.words('English'))
 
 ps = PorterStemmer()
 
-def has_numbers(word):
+def has_numbers(word): #Why we ignor words with numbers? By this we would miss words like GPT4 or fly752 !
     for n in numbers:
         if n in word:
             return True
@@ -38,12 +39,17 @@ def load_data(data_path):
 
 
 # train your model and report the duration time
-train_data_path = 'train_data.csv'
+here = os.path.dirname(os.path.abspath(__file__))
+train_data_path = os.path.join(here, "train_data.csv")
+
 classes = ['negative', 'neutral','positive']
 nb_classifier = NaiveBayesClassifier(classes)
 nb_classifier.train(load_data(train_data_path))
-print(nb_classifier.calculate_landa('mom',True))
-test_string = "I love playing football"
-print(nb_classifier.classify(preprocess(test_string)))
+#print(nb_classifier.calculate_landa('brain',True))
+
+
 #what are eval_data and test_data_nolablel for?
+#eval data -> checking and improving our model   test data -> the project output to be checked by TAs
+
+
 
