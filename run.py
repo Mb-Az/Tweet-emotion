@@ -51,5 +51,22 @@ nb_classifier.train(load_data(train_data_path))
 #what are eval_data and test_data_nolablel for?
 #eval data -> checking and improving our model   test data -> the project output to be checked by TAs
 
+#Checking eval data:
+eval_data_path = os.path.join(here, "eval_data.csv")
+eval_data = pd.read_csv(eval_data_path)
 
 
+#eval_data["Our model"] = nb_classifier.classical_classify(preprocess(eval_data["text"]))
+our_model = []
+hit_count = 0
+
+index = 0
+for text in eval_data["text"]:
+    pred = nb_classifier.classical_classify(preprocess(str(text)))
+    our_model.append(pred)
+
+    if(eval_data.iloc[index, 4] == pred):
+        hit_count += 1
+    index += 1
+
+print("hit_rate = ", round((hit_count/len(eval_data)*100),2) ,"Percent")

@@ -76,7 +76,8 @@ class NaiveBayesClassifier:
         for label in range(len(self.classes)):
             probs[label] = 1
             for word in features:
-                probs[label] *= self.calculate_likelihood(word, label)
+                if word in self.class_word_counts:
+                    probs[label] *= self.calculate_likelihood(word, label)
             probs[label] *= self.calculate_prior(label)
 
         if(probs[0] > probs[1]):
