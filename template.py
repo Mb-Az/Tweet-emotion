@@ -11,7 +11,7 @@ class NaiveBayesClassifier:
         # class_word_counts --> frequency dictionary for each class
         # class_counts --> number of instances of each class
         # vocab --> all unique words
-        self.smoothing = 1  
+        self.smoothing = 4  
         self.classes = classes
         self.class_word_counts = dict()
         self.class_counts = [0 for _ in range(len(classes))]
@@ -31,13 +31,7 @@ class NaiveBayesClassifier:
                 else:
                      self.class_word_counts[word][label] += 1
 
-
-    def calculate_prior(self):
-        pass
-       #def calculate_prior_log(self):
-    #    # calculate log prior
-    #    return math.log2(self.class_counts[2]/self.class_counts[0])
-                     
+           
     def calculate_prior(self, label):
         # calculate log prior
         if(label == 0):
@@ -50,31 +44,24 @@ class NaiveBayesClassifier:
         # calculate likelihhood: P(word | label)
         return (self.class_word_counts[word][label] + self.smoothing)/(self.class_counts[label] + self.smoothing*len(self.class_word_counts[word])) #double check the formula
     
-    #def calculate_landa(self,word, neutral_effect = False):
-    #    pp = self.calculate_likelihood(word,2) #P(positive | word)
-    #    pn = self.calculate_likelihood(word,0) #P(negetice | word)
-    #    if neutral_effect:
-    #        return math.log2((pp + self.calculate_likelihood(word,1))/(pn+self.calculate_likelihood(word,1)))
-    #    else:
-    #        return math.log2(pp/pn)
+    def calculate_lambda(self,word, label):
+       prior = math.log2(self.calculate_likelihood(word,label)) #P(positive | word) 
+       return prior
 
-    #def classify_with_lambda(self, features):
-        # predict the class
-        #landa = self.calculate_prior()
-        #for word in features:
-            #landa += self.calculate_landa(word)
+    def classify_with_lambda(self, features):
+        probs = dict()
+        for label in range(len(self.classes)):
+            probs[label] = 0
+            for word in features:
+                if word in self.class_word_counts:
+                    probs[label] += self.calculate_lambda(word, label)
+            probs[label] += math.log2(self.calculate_prior(label))
+       
+        return self.classes[max(probs,key= lambda x: probs[x])]
 
-        #should we set a threshold for classes? what is hyperparameter to train?
-        #if landa > 0:
-        #    return self.classes[2]
-        #elif landa < 0:
-        #    return self.classes[0]
-        #else:
-        #    return self.classes[1]
     
     def classical_classify(self, features):
         probs = dict()
-
         for label in range(len(self.classes)):
             probs[label] = 1
             for word in features:
@@ -82,10 +69,4 @@ class NaiveBayesClassifier:
                     probs[label] *= self.calculate_likelihood(word, label)
             probs[label] *= self.calculate_prior(label)
 
-        if(probs[0] > probs[1]):
-            if(probs[0] > probs[2]):
-                return(self.classes[0])
-            return self.classes[2]
-        if(probs[1] > probs[2]):
-            return(self.classes[1])
-        return self.classes[2]
+        return self.classes[max(probs,key= lambda x: probs[x])]

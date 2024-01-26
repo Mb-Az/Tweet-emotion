@@ -1,1 +1,1 @@
-ps.stem(
+ and word not in punctuation

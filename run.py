@@ -13,7 +13,7 @@ stopwords = set(stopwords.words('English'))
 
 ps = PorterStemmer()
 
-def has_numbers(word): #Why we ignor words with numbers? By this we would miss words like GPT4 or fly752 !
+def has_numbers(word): #Why we ignore words with numbers? By this we would miss words like GPT4 or fly752 !
     for n in numbers:
         if n in word:
             return True
@@ -26,8 +26,8 @@ def preprocess(tweet_string):
     features = []
     for sent in sentences:
         for word in nltk.word_tokenize(sent):
-            if word not in stopwords and word not in punctuation and not has_numbers(word) and word.startswith(alphabets): #should also clean I,you, my ...?
-                features.append(ps.stem(word))
+             if word not in stopwords and word not in punctuation and not has_numbers(word): #should also clean I,you, my ...?
+                features.append(ps.stem(word.lower()))
     return features
 
 def load_data(data_path):
