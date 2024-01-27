@@ -16,7 +16,8 @@ class NaiveBayesClassifier:
         self.class_word_counts = dict()
         self.class_counts = [0 for _ in range(len(classes))]
         self.vocab = None
-
+        #tf-idf usage
+        self.class_total_words_count = [0 for _ in range(len(classes))]
     def train(self, data):
         # training process:
         # inputs: data(list) --> each item of list is a tuple 
@@ -25,6 +26,7 @@ class NaiveBayesClassifier:
         for features, label in data:
             self.class_counts[label] += 1 
             for word in features:
+                self.class_total_words_count[label] += 1
                 if word not in self.class_word_counts:
                     self.class_word_counts[word] = [0,0,0]
                     self.class_word_counts[word][label] = 1
@@ -47,6 +49,28 @@ class NaiveBayesClassifier:
     def calculate_lambda(self,word, label):
        prior = math.log2(self.calculate_likelihood(word,label)) #P(positive | word) 
        return prior
+    def calculate_tf_idf(self):
+        tf_idf = dict()
+        n = len(self.classes)
+        s = sum(self.class_counts)
+
+        for word in self.class_word_counts.keys():
+            tf_idf[word] = [0 for _ in range(n)]
+            for label in range(n):
+                tf_idf[word][label] = (self.class_word_counts[word][label]/self.class_total_words_count[label])*(math.log2(s/(sum([1 for i in self.class_word_counts[word] if i != 0]))))
+        return tf_idf
+    def classify_tf_idf(self, features):
+        tf_idf = self.calculate_tf_idf()
+        probs = dict()
+        for label in range(len(self.classes)):
+            probs[label] = 1
+            for word in features:
+                if word in self.class_word_counts:
+                    probs[label] *= self.calculate_likelihood(word, label)*tf_idf[word][label]
+            probs[label] *= self.calculate_prior(label)
+
+            # probs[label] += math.log2(self.calculate_prior(label))
+        return self.classes[max(probs,key= lambda x: probs[x])]
 
     def classify_with_lambda(self, features):
         probs = dict()
