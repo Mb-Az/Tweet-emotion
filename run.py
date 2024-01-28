@@ -5,6 +5,7 @@ import os
 import nltk.tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+import time
 
 punctuation = string.punctuation
 numbers = {'0','1','2','3','4','5','6','7','8','9'}
@@ -39,24 +40,27 @@ def load_data(data_path):
 
 
 # train your model and report the duration time
+train_started_time = time.time()
+
 here = os.path.dirname(os.path.abspath(__file__))
 train_data_path = os.path.join(here, "train_data.csv")
 
 classes = ['negative', 'neutral','positive']
 nb_classifier = NaiveBayesClassifier(classes)
 nb_classifier.train(load_data(train_data_path))
+
+train_ended_time = time.time()
+
+
+#this is for test:
 #print(nb_classifier.calculate_landa('brain',True))
 
+#Checking eval data and labeling new ones:
+labeling_stated_time = time.time()
 
-#what are eval_data and test_data_nolablel for?
-#eval data -> checking and improving our model   test data -> the project output to be checked by TAs
-
-#Checking eval data:
 eval_data_path = os.path.join(here, "eval_data.csv")
 eval_data = pd.read_csv(eval_data_path)
 
-
-#eval_data["Our model"] = nb_classifier.classical_classify(preprocess(eval_data["text"]))
 our_model = ""
 hit_count = 0
 
@@ -69,13 +73,16 @@ for text in eval_data["text"]:
         hit_count += 1
     index += 1
 
+labeling_ended_time = time.time()
+
+#reporting hit rate and measured time for train and labeling:
 print("hit_rate = ", round((hit_count/len(eval_data)*100),2) ,"Percent")
+print("train duration = ", train_ended_time - train_started_time, " Seconds")
+print("labeling duration = ", labeling_ended_time - labeling_stated_time, " Seconds")
 
 
 #Write our model results fo file:
 result_path = os.path.join(here, "result.txt")
 f = open(result_path, 'w')
-
 f.write(our_model)
-
 f.close()
