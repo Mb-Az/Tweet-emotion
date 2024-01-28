@@ -11,7 +11,7 @@ class NaiveBayesClassifier:
         # class_word_counts --> frequency dictionary for each class
         # class_counts --> number of instances of each class
         # vocab --> all unique words
-        self.smoothing = 1  
+        self.smoothing = 3  
         self.classes = classes
         self.class_word_counts = dict()
         self.class_counts = [0 for _ in range(len(classes))]
@@ -80,12 +80,6 @@ class NaiveBayesClassifier:
                     probs[label] *= self.calculate_likelihood(word, label)
             probs[label] *= self.calculate_prior(label)
 
-        if(probs[0] > probs[1]):
-            if(probs[0] > probs[2]):
-                return(self.classes[0])
-            return self.classes[2]
-        if(probs[1] > probs[2]):
-            return(self.classes[1])
-        return self.classes[2]
+        return self.classes[max(probs,key= lambda x: probs[x])]
 
 # Good luck :)

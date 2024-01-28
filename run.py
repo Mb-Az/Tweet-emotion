@@ -2,6 +2,7 @@ from template import NaiveBayesClassifier
 import string
 import pandas as pd
 import os
+import re
 import nltk.tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
@@ -9,13 +10,12 @@ import time
 
 punctuation = string.punctuation
 numbers = {'0','1','2','3','4','5','6','7','8','9'}
-alphabets = tuple(string.ascii_letters)
 stopwords = set(stopwords.words('English'))
 
 ps = PorterStemmer()
 
-def has_numbers(word): #Why we ignor words with numbers? By this we would miss words like GPT4 or fly752 !
-    for n in numbers:
+def has_this(word,this): #Why we ignore words with numbers? By this we would miss words like GPT4 or fly752 !
+    for n in this:
         if n in word:
             return True
     return False
@@ -27,8 +27,8 @@ def preprocess(tweet_string):
     features = []
     for sent in sentences:
         for word in nltk.word_tokenize(sent):
-            if word not in stopwords and word not in punctuation and not has_numbers(word) and word.startswith(alphabets): #should also clean I,you, my ...?
-                features.append(ps.stem(word))
+            if word.lower() not in stopwords and not has_this(word, numbers) and not has_this(word, punctuation):   
+                features.append(ps.stem(word.lower()))
     return features
 
 def load_data(data_path):
@@ -50,10 +50,6 @@ nb_classifier = NaiveBayesClassifier(classes)
 nb_classifier.train(load_data(train_data_path))
 
 train_ended_time = time.time()
-
-
-#this is for test:
-#print(nb_classifier.calculate_landa('brain',True))
 
 #Checking eval data and labeling new ones:
 labeling_stated_time = time.time()
