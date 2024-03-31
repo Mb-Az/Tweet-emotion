@@ -11,7 +11,7 @@ class NaiveBayesClassifier:
         # class_word_counts --> frequency dictionary for each class
         # class_counts --> number of instances of each class
         # vocab --> all unique words
-        self.smoothing = 1  
+        self.smoothing = 3  
         self.classes = classes
         self.class_word_counts = dict()
         self.class_counts = [0 for _ in range(len(classes))]
@@ -32,34 +32,54 @@ class NaiveBayesClassifier:
                      self.class_word_counts[word][label] += 1
 
 
-    def calculate_prior(self):
+    #def calculate_prior_log(self):
+    #    # calculate log prior
+    #    return math.log2(self.class_counts[2]/self.class_counts[0])
+                     
+    def calculate_prior(self, label):
         # calculate log prior
-        return math.log2(self.class_counts[2]/self.class_counts[0])
+        if(label == 0):
+            return self.class_counts[0]/(self.class_counts[1] + self.class_counts[2])
+        if(label == 1):
+            return self.class_counts[1]/(self.class_counts[0] + self.class_counts[2])
+        return self.class_counts[2]/(self.class_counts[0] + self.class_counts[1])
 
     def calculate_likelihood(self, word, label):
         # calculate likelihhood: P(word | label)
         return (self.class_word_counts[word][label] + self.smoothing)/(self.class_counts[label] + self.smoothing*len(self.class_word_counts[word])) #double check the formula
-    def calculate_landa(self,word, neutral_effect = False):
-        pp = self.calculate_likelihood(word,2) #P(positive | word)
-        pn = self.calculate_likelihood(word,0) #P(negetice | word)
-        if neutral_effect:
-            return math.log2((pp + self.calculate_likelihood(word,1))/(pn+self.calculate_likelihood(word,1)))
-        else:
-            return math.log2(pp/pn)
+    
+    #def calculate_landa(self,word, neutral_effect = False):
+    #    pp = self.calculate_likelihood(word,2) #P(positive | word)
+    #    pn = self.calculate_likelihood(word,0) #P(negetice | word)
+    #    if neutral_effect:
+    #        return math.log2((pp + self.calculate_likelihood(word,1))/(pn+self.calculate_likelihood(word,1)))
+    #    else:
+    #        return math.log2(pp/pn)
 
-    def classify(self, features):
+    #def classify_with_lambda(self, features):
         # predict the class
-        landa = self.calculate_prior()
-        for word in features:
-            landa += self.calculate_landa(word) 
+        #landa = self.calculate_prior()
+        #for word in features:
+            #landa += self.calculate_landa(word)
 
         #should we set a threshold for classes? what is hyperparameter to train?
-        if landa > 0:
-            return self.classes[2]
-        elif landa < 0:
-            return self.classes[0]
-        else:
-            return self.classes[1]
+        #if landa > 0:
+        #    return self.classes[2]
+        #elif landa < 0:
+        #    return self.classes[0]
+        #else:
+        #    return self.classes[1]
     
+    def classical_classify(self, features):
+        probs = dict()
+
+        for label in range(len(self.classes)):
+            probs[label] = 1
+            for word in features:
+                if word in self.class_word_counts:
+                    probs[label] *= self.calculate_likelihood(word, label)
+            probs[label] *= self.calculate_prior(label)
+
+        return self.classes[max(probs,key= lambda x: probs[x])]
 
 # Good luck :)

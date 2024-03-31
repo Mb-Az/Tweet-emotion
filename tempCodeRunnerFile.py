@@ -1,0 +1,1 @@
+if word.lower() not in stopwords and not has_this(word, numbers) and not has_this(word, punctuation): 
